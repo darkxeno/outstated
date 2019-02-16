@@ -51,8 +51,6 @@ function App() {
 }
 
 ReactDOM.render(
-  <Provider stores={[appStore, counterStore]}>
-    <App />
-  </Provider>,
+  <App />,
   window.complex
 );

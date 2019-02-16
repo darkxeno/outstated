@@ -26,8 +26,6 @@ function Counter() {
 }
 
 ReactDOM.render(
-  <Provider stores={[store]}>
-    <Counter />
-  </Provider>,
+  <Counter />,
   window.simple
 );

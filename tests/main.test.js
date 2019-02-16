@@ -2,7 +2,7 @@
 /* global spyOn */
 import React, {useState} from 'react';
 import {act, cleanup, fireEvent, render, testHook} from 'react-testing-library';
-import {Provider, useStore} from '../src';
+import {useStore} from '../src';
 
 const counterStore = () => {
   const [count, setCount] = useState(0);
@@ -28,6 +28,7 @@ const Counter = () => {
   );
 };
 
+
 const brokenStore = () => {};
 
 const BrokenCounter = () => {
@@ -50,10 +51,9 @@ test('should incresase/decrease state counter in hook', () => {
 });
 
 test('should incresase/decrease state counter in container', () => {
+  
   const {getByText} = render(
-    <Provider stores={[counterStore]}>
-      <Counter />
-    </Provider>
+    <Counter />
   );
 
   expect(getByText(/^Count:/).textContent).toBe('Count: 0');
@@ -69,29 +69,36 @@ test('should incresase/decrease state counter in container', () => {
   expect(getByText(/^Count:/).textContent).toBe('Count: 100');
 });
 
-test('should throw error when no provider is given', () => {
-  spyOn(console, 'error');
-  expect(() => render(<Counter />)).toThrowError('You must wrap your components with a <Provider>!');
-});
 
 test('should throw error when no stores are given to provider', () => {
   spyOn(console, 'error');
   expect(() =>
-    render(
-      <Provider>
-        <Counter />
-      </Provider>
-    )
-  ).toThrowError('You must provide stores list to a <Provider> for initialization!');
+    useStore()
+  ).toThrowError('You must provide a store function to the useStore hook!');
 });
 
-test('should throw error when store init fails', () => {
-  spyOn(console, 'error');
-  expect(() =>
-    render(
-      <Provider stores={[brokenStore]}>
-        <BrokenCounter />
-      </Provider>
-    )
-  ).toThrowError('Provided store instance did not initialized correctly!');
+test('should work with multiple components using the same store', () => {
+  const {getByText: getByText1 } = render(
+    <Counter />
+  );
+
+  const {getByText: getByText2} = render(
+    <Counter />
+  );  
+
+  expect(getByText1(/^Count:/).textContent).toBe('Count: 0');
+  expect(getByText2(/^Count:/).textContent).toBe('Count: 0');
+
+  fireEvent.click(getByText1('+'));
+  fireEvent.click(getByText2('+'));
+  expect(getByText1(/^Count:/).textContent).toBe('Count: 2');
+  expect(getByText2(/^Count:/).textContent).toBe('Count: 2');
+
+  fireEvent.click(getByText1('-'));
+  expect(getByText1(/^Count:/).textContent).toBe('Count: 1');
+  expect(getByText2(/^Count:/).textContent).toBe('Count: 1');
+
+  fireEvent.click(getByText2('set'));
+  expect(getByText1(/^Count:/).textContent).toBe('Count: 100');
+  expect(getByText2(/^Count:/).textContent).toBe('Count: 100');
 });
