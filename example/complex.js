@@ -1,7 +1,7 @@
 // @flow
 import React, {useState} from 'react';
 import ReactDOM from 'react-dom';
-import {Provider, useStore} from '../src';
+import {useStore} from '../src';
 
 const appStore = () => {
   const [amount, setAmount] = useState(1);

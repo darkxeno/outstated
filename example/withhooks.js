@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import ReactDOM from 'react-dom';
-import {Provider, useStore} from '../src';
+import {useStore} from '../src';
 
 // custom mouse position hook
 const useMousePosition = () => {
